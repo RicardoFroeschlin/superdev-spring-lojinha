@@ -18,14 +18,38 @@ public class ProdutoController {
 
     @GetMapping
     public List<Produto> listaProdutos() {
-        ProdutoRepository repository = new ProdutoRepository();
         return repository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Produto> ListarPorId(@PathVariable int id) {
+        Produto produto = repository.findById(id);
+        if (produto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(produto);
     }
 
     @PostMapping
     public ResponseEntity<Produto> adicionarProduto(@RequestBody Produto produto) {
-        Produto novoProduto = repository.create(produto)
+        Produto novoProduto = repository.create(produto);
         return new  ResponseEntity<>(novoProduto, HttpStatus.CREATED);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Produto> alterar(@RequestBody Produto produto,@PathVariable int id) {
+        Produto produtoExiste = repository.findById(id);
+        if (produtoExiste == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(repository.alter(produto));
+    }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<Produto> excluir(@PathVariable int id) {
+        Produto produtoExiste = repository.findById(id);
+        if (produtoExiste == null) {
+            return  ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(repository.delete(id));
+    }
 }
